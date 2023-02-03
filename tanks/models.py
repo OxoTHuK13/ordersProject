@@ -9,8 +9,8 @@ def get_path_for_sketches(instance, filename):
     print(f'Инстансе: {instance}, Файлнейм: {filename}')
     # print(f'Vehicles: : {instance.vehicles}')
     try:
-        translated_path = 'brothers'
-        # translated_path = unidecode(instance.vehicles.first().name).lower().replace(' ', '-').replace('-', '-')
+        # translated_path = 'brothers'
+        translated_path = unidecode(instance.vehicles.first().name).lower().replace(' ', '-').replace('-', '-')
     except AttributeError:
         translated_path = 'others'
     translated_filename = unidecode(filename).lower().replace(' ', '-')
