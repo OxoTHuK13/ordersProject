@@ -33,22 +33,14 @@ class CustomerAdmin(admin.ModelAdmin):
     @admin.display(description='Номер телефона')
     def get_phone_numbers(self, obj):
         numbers = obj.phonenumber_set.all()
-        numbers_list = []
-        if numbers:
-            for number in numbers:
-                numbers_list.append(number.number)
-            return safe('<br>'.join(numbers_list))
+        numbers_list = [number.number for number in numbers if numbers]
+        return safe('<br>'.join(numbers_list))
 
     @admin.display(description='Город, Регион')
     def get_city(self, obj):
-        # print(obj.address_set.all())
         cities = obj.address_set.order_by('address')
-        cities_list = []
-        if cities:
-            for city in cities:
-                print(city.city)
-                cities_list.append(city.city.__str__())
-            return safe('<br>'.join(cities_list))
+        cities_list = [city.city.__str__() for city in cities if cities]
+        return safe('<br>'.join(cities_list))
 
 
 class PhoneNumberAdmin(admin.ModelAdmin):
