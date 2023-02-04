@@ -44,6 +44,8 @@ class Cost(models.Model):
             tank.save(*args, **kwargs)
 
 
+# FIXME: При создании новой записи, если выбран скетч, выпадает ошибка (т.к. путь еще не найден).
+# FIXME: При удалении скетча удалить файл из папки.
 class Tank(models.Model):
     name = models.CharField('Бак', max_length=255)
     gross_volume = models.DecimalField('Общий Объем, л', max_digits=5, decimal_places=2, default=0.00)
