@@ -10,6 +10,7 @@ class DeliveryCompany(models.Model):
     class Meta:
         verbose_name = 'Транспортная компания'
         verbose_name_plural = 'Транспортные компании'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -59,7 +60,6 @@ class HistoryOrderStatus(models.Model):
     def __str__(self):
         return f'{self.status_date}'
 
-    # TODO: Сделать так, чтоб у заказа сохранялась история статусов с указанием даты/времени
     # TODO: Создать модель допников
     # TODO: Создать модель Производство
     # TODO: Реализовать добавление в Производство баков из заказа
