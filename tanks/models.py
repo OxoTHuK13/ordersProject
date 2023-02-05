@@ -6,8 +6,6 @@ from unidecode import unidecode
 
 
 def get_path_for_sketches(instance, filename):
-    print(f'Инстансе: {instance}, Файлнейм: {filename}')
-    # print(f'Vehicles: : {instance.vehicles}')
     try:
         # translated_path = 'brothers'
         translated_path = unidecode(instance.vehicles.first().name).lower().replace(' ', '-').replace('-', '-')
@@ -74,9 +72,6 @@ class Tank(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        print(f'sketch: {self.sketch}, DICT: {self.sketch.__dict__}')
-        print(f'upload_to: {self.sketch._file}')
-        print(f'Vehicles:{self.vehicles.all()}')
         const = Cost.objects.first()
         self.volume = self.gross_volume - self.excluded_volume
         self.cut_cost = const.cut * self.weld_length
@@ -85,7 +80,6 @@ class Tank(models.Model):
         self.cost = self.cut_cost + self.welding_cost + self.metal_cost
         self.price = math.Ceil((self.difficult_koef + self.cost * 2 + const.dut)/100)*100
         super(Tank, self).save(*args, **kwargs)
-        # self.sketch = get_path_for_sketches()
 
     def __init__(self, *args, **kwargs):
         super(Tank, self).__init__(*args, **kwargs)
