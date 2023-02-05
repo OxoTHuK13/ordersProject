@@ -9,8 +9,8 @@ class HistoryOrderStatusInline(admin.TabularInline):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'get_status', 'get_status_date', 'delivery')
-    list_filter = ('customer',)
+    list_display = ('id', 'customer', 'status', 'status_date', 'delivery')
+    list_filter = ('customer', 'status')
     filter_horizontal = ('tank',)
     inlines = (HistoryOrderStatusInline,)
 
