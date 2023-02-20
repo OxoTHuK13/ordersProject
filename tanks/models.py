@@ -8,7 +8,8 @@ from unidecode import unidecode
 def get_path_for_sketches(instance, filename):
     try:
         # translated_path = 'brothers'
-        translated_path = unidecode(instance.vehicles.first().name).lower().replace(' ', '-').replace('-', '-')
+        print(instance.vehicles.name, type(instance.vehicles.name))
+        translated_path = unidecode(instance.vehicles.name).lower().replace(' ', '-').replace('-', '-')
     except AttributeError:
         translated_path = 'others'
     translated_filename = unidecode(filename).lower().replace(' ', '-')
@@ -42,6 +43,43 @@ class Cost(models.Model):
             tank.save(*args, **kwargs)
 
 
+class VehicleType(models.Model):
+    name = models.CharField('Тип ТС', max_length=25)
+
+    class Meta:
+        verbose_name = 'Тип ТС'
+        verbose_name_plural = 'Типы ТС'
+
+    def __str__(self):
+        return self.name
+
+
+class Vehicle(models.Model):
+    name = models.CharField('Наименование', max_length=150)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.SET_NULL, null=True, verbose_name='Тип ТС')
+
+    # tanks = models.ManyToManyField('Tank', verbose_name='Наименование бака', related_name='vehicles', blank=True)
+
+    class Meta:
+        verbose_name = 'Транспортное средство'
+        verbose_name_plural = 'Транспортные средства'
+
+    def __str__(self):
+        return self.name
+
+
+# class VehicleModel(models.Model):
+#     name = models.CharField('Наименование', max_length=150)
+#     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, verbose_name='ТС')
+#
+#     class Meta:
+#         verbose_name = 'Модель Транспортного средства'
+#         verbose_name_plural = 'Модель Транспортных средств'
+#
+#     def __str__(self):
+#         return self.name
+
+
 # FIXME: При создании новой записи, если выбран скетч, выпадает ошибка (т.к. путь еще не найден).
 # FIXME: При удалении скетча удалить файл из папки.
 class Tank(models.Model):
@@ -61,9 +99,11 @@ class Tank(models.Model):
     metal_cost = models.DecimalField('Металл, руб', max_digits=7, decimal_places=2, null=True, editable=False)
     cost = models.DecimalField('Себестоимость, руб', max_digits=7, decimal_places=2, null=True, editable=False)
     price = models.DecimalField('Цена, руб', max_digits=7, decimal_places=2, null=True, editable=False)
-    vehicles = models.ManyToManyField('Vehicle', verbose_name='Транспортное средство', related_name='tanks', blank=True)
+    vehicles = models.ForeignKey(Vehicle, on_delete=models.CASCADE, verbose_name='Транспортное средство',
+                                 blank=True, null=True)
     sketch = models.ImageField('Чертеж', upload_to=get_path_for_sketches, null=True, blank=True)
 
+    # FIXME: Придумать связи между Баком, ТС и Моделью ТС, чтоб в админке сделать инлайн у бака: ТС -- Модель ТС
     class Meta:
         verbose_name = 'Бак'
         verbose_name_plural = 'Баки'
@@ -78,7 +118,7 @@ class Tank(models.Model):
         self.welding_cost = const.welding * self.weld_length
         self.metal_cost = const.metal * self.weight
         self.cost = self.cut_cost + self.welding_cost + self.metal_cost
-        self.price = math.Ceil((self.difficult_koef + self.cost * 2 + const.dut)/100)*100
+        self.price = math.Ceil((self.difficult_koef + self.cost * 2 + const.dut) / 100) * 100
         super(Tank, self).save(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
@@ -89,26 +129,14 @@ class Tank(models.Model):
             self.old_sketch_path = ''
 
 
-class Vehicle(models.Model):
-    name = models.CharField('Наименование', max_length=150)
-    vehicle_type = models.ForeignKey('VehicleType', on_delete=models.SET_NULL, null=True, verbose_name='Тип ТС')
+class TankToVehicle(models.Model):
+    tank = models.ForeignKey(Tank, on_delete=models.CASCADE, verbose_name='Бак')
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, verbose_name='ТС')
 
-    # tanks = models.ManyToManyField('Tank', verbose_name='Наименование бака', related_name='vehicles', blank=True)
-
+    # vehicle_model = models.ForeignKey(VehicleModel, on_delete=models.CASCADE, verbose_name='Модель ТС')
     class Meta:
-        verbose_name = 'Транспортное средство'
-        verbose_name_plural = 'Транспортные средства'
+        verbose_name = 'ТС'
+        verbose_name_plural = 'ТС'
 
     def __str__(self):
-        return self.name
-
-
-class VehicleType(models.Model):
-    name = models.CharField('Тип ТС', max_length=25)
-
-    class Meta:
-        verbose_name = 'Тип ТС'
-        verbose_name_plural = 'Типы ТС'
-
-    def __str__(self):
-        return self.name
+        return f'{self.vehicle}'

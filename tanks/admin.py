@@ -3,10 +3,11 @@ from django.contrib import admin
 from .models import *
 
 
-class VehicleInline(admin.TabularInline):
-    model = Tank.vehicles.through
+class TankToVehicleInline(admin.TabularInline):
+    model = TankToVehicle
     fields = ['vehicle', ]
     extra = 0
+    # list_select_related = ['vehicle', 'vehicle_type']
 
 
 class TankAdmin(admin.ModelAdmin):
@@ -15,11 +16,11 @@ class TankAdmin(admin.ModelAdmin):
         ('Параметры для расчета',
          {'fields': ['name', 'gross_volume', 'weld_length', 'excluded_volume', 'weight', 'difficult_koef', 'description', ],
           'classes': ['collapse']}),
-        (None, {'fields': ['regular', 'cut_cost', 'welding_cost', 'metal_cost', 'cost', 'volume', 'price', 'sketch', ]})
+        (None, {'fields': ['regular', 'cut_cost', 'welding_cost', 'metal_cost', 'cost', 'volume', 'price', 'sketch', 'vehicles']})
     ]
     list_display = ['name', 'weight', 'price', 'regular']
     list_editable = ['regular']
-    inlines = [VehicleInline, ]
+    inlines = [TankToVehicleInline, ]
     list_filter = ['regular', 'vehicles__vehicle_type', 'vehicles', ]
 
 
@@ -34,6 +35,7 @@ admin.site.register(Tank, TankAdmin)
 admin.site.register(Cost)
 admin.site.register(Vehicle, VehicleAdmin)
 admin.site.register(VehicleType)
+# admin.site.register(VehicleModel)
 
 admin.site.site_title = 'Админ-панель ВсеБаки'
 admin.site.site_header = 'Админ-панель ВсеБаки'
